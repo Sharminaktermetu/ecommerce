@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+
 import { Product } from "./product.interface";
 import { ProductModel } from "./product.model";
 
@@ -11,20 +11,19 @@ const getAllProductsFromDB = async () => {
   return result;
 };
 
-const getSingleProductFromDB = async (id: string) => {
-  const result = await ProductModel.findOne({ id });
-  return result;
+const getSingleProductFromDB = async (productId: string) => {
+
+  const product = await ProductModel.findById(productId);
+ 
+
+  return product;
 };
 const updateProductFromDB = async (
   productId: string,
   updatedData: Partial<Product>
 ) => {
-  // Check if the productId is a valid MongoDB ObjectID
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
-    throw new Error("Invalid product ID");
-  }
+ 
 
-  // Find and update the product
   const updatedProduct = await ProductModel.findByIdAndUpdate(
     productId,
     updatedData,
@@ -37,14 +36,40 @@ const updateProductFromDB = async (
 
   return updatedProduct;
 };
-const deleteProductFromDB = async (id: string) => {
-  const result = await ProductModel.deleteOne({ id });
+const deleteProductFromDB = async (productId: string) => {
+  const result = await ProductModel.deleteOne({ _id: productId });
   return result;
 };
+
+const searchProductsFromDB = async (searchTerm: string) => {
+
+  const regex = new RegExp(searchTerm, 'i');
+  
+  // Search in name and description
+  const results = await ProductModel.find({
+      $or: [
+          { name: regex },
+          { description: regex }
+      ]
+  });
+
+  return results;
+};
+
+
+
+
+
+
+
+
+
+
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
   updateProductFromDB,
-  deleteProductFromDB
+  deleteProductFromDB,
+  searchProductsFromDB
 };

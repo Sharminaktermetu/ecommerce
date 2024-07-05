@@ -1,5 +1,6 @@
 import { ProductServices } from "./product.service";
 import { Request, Response } from "express";
+
 const createProduct = async (req: Request, res: Response) => {
   try {
     const productData = req.body;
@@ -80,11 +81,38 @@ const deleteSingleProduct = async (req: Request, res: Response) => {
     console.log(err);
   }
 };
+const searchProducts = async (req: Request, res: Response) => {
+  try {
+      const { searchTerm } = req.query;
+console.log({searchTerm});
+      if (!searchTerm || typeof searchTerm !== 'string') {
+          return res.status(400).json({
+              success: false,
+              message: 'searchTerm query parameter is required and must be a string',
+          });
+      }
 
+      const results = await ProductServices.searchProductsFromDB(searchTerm);
+
+      res.status(200).json({
+          success: true,
+          message: "Products fetched successfully!",
+          data: results,
+      });
+  } catch (err) {
+      console.error('Error searching for products:', err);
+      res.status(500).json({
+          success: false,
+          message: 'Internal server error',
+          error: err,
+      });
+  }
+};
 export const ProductControllers = {
   createProduct,
   getAllProducts,
   getSingleProduct,
   updateSingleProduct,
-  deleteSingleProduct
+  deleteSingleProduct,
+  searchProducts
 };
