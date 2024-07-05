@@ -12,7 +12,7 @@ const inventorySchema =new Schema<Inventory>({
         type: Boolean,
         required: true,
       },
-})
+},{ _id: false })
 
 const variantsSchema =new Schema<Variant>({
     
@@ -25,7 +25,7 @@ const variantsSchema =new Schema<Variant>({
           required: true,
         },
      
-})
+},{ _id: false })
 const productSchema = new Schema<Product>({
   name: {
     type: String,
@@ -45,10 +45,12 @@ const productSchema = new Schema<Product>({
   },
   tags: [String],
   variants: [{
-    type:variantsSchema
+    type:variantsSchema,
+   
 }],
   inventory: {
-    type:inventorySchema
+    type:inventorySchema,
+   
   },
 });
 
