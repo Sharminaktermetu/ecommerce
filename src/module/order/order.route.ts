@@ -5,6 +5,8 @@ import { OrderControllers } from './order.controller';
 const router = Router();
 
 
-router.post('/', OrderControllers.createOrder);
 
+
+router.post('/orders', OrderControllers.createOrder);
+router.get('/orders', OrderControllers.fetchOrders)
 export const OrderRoutes = router;

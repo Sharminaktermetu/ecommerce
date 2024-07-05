@@ -20,16 +20,56 @@ import { OrderServices } from './order.service';
             message: 'Order created successfully!',
             data: order,
         });
-    } catch (err) {
-        console.error('Error creating order:', err);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err :any) {
+        
         res.status(500).json({
             success: false,
-            message: 'Internal server error',
-            error: err,
+
+            message: err.message,
         });
     }
 };
 
+
+const fetchOrders = async (req: Request, res: Response) => {
+    try {
+        const email = req.query.email;
+
+        if (email && typeof email === 'string') {
+            // If email query parameter is present, fetch orders by email
+            const orders = await OrderServices.getOrdersByEmailFromDB(email);
+            res.status(200).json({
+                success: true,
+                message: `Orders fetched successfully for email: ${email}`,
+                data: orders,
+            });
+        } else {
+            
+            const result = await OrderServices.getAllOrdersFromDb();
+
+            res.status(200).json({
+                success: true,
+                message: 'All orders fetched successfully!',
+                data: result.orders,
+                
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error,
+        });
+    }
+};
+
+
+
+
+
 export const OrderControllers={
-    createOrder
+    createOrder,
+    fetchOrders
 }

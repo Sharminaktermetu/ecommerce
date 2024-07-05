@@ -6,10 +6,7 @@ const createProductIntoDB = async (product: Product) => {
   const result = await ProductModel.create(product);
   return result;
 };
-const getAllProductsFromDB = async () => {
-  const result = await ProductModel.find();
-  return result;
-};
+
 
 const getSingleProductFromDB = async (productId: string) => {
 
@@ -40,7 +37,10 @@ const deleteProductFromDB = async (productId: string) => {
   const result = await ProductModel.deleteOne({ _id: productId });
   return result;
 };
-
+const getAllProductsFromDB = async () => {
+  const result = await ProductModel.find();
+  return result;
+};
 const searchProductsFromDB = async (searchTerm: string) => {
 
   const regex = new RegExp(searchTerm, 'i');

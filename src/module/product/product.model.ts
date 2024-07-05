@@ -26,6 +26,7 @@ const variantsSchema =new Schema<Variant>({
         },
      
 },{ _id: false })
+
 const productSchema = new Schema<Product>({
   name: {
     type: String,

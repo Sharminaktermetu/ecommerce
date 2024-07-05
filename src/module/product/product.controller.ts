@@ -1,27 +1,23 @@
 import { ProductServices } from "./product.service";
 import { Request, Response } from "express";
 
+import joiValidation from "./product.validation";
 const createProduct = async (req: Request, res: Response) => {
   try {
     const productData = req.body;
+    const { error } = joiValidation.validate(productData);
 
     const result = await ProductServices.createProductIntoDB(productData);
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: "something went wrong",
+        error
+      });
+    }
     res.status(200).json({
       success: true,
       message: "Product is created successfully",
-      data: result,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-const getAllProducts = async (req: Request, res: Response) => {
-  try {
-    const result = await ProductServices.getAllProductsFromDB();
-
-    res.status(200).json({
-      success: true,
-      message: "Products fetched successfully!",
       data: result,
     });
   } catch (err) {
@@ -81,38 +77,42 @@ const deleteSingleProduct = async (req: Request, res: Response) => {
     console.log(err);
   }
 };
-const searchProducts = async (req: Request, res: Response) => {
+
+const getAllProducts = async (req: Request, res: Response) => {
   try {
-      const { searchTerm } = req.query;
-console.log({searchTerm});
-      if (!searchTerm || typeof searchTerm !== 'string') {
-          return res.status(400).json({
-              success: false,
-              message: 'searchTerm query parameter is required and must be a string',
-          });
-      }
+    const { searchTerm } = req.query;
 
+    if (searchTerm && typeof searchTerm === "string") {
+      // Search for products if searchTerm is provided
       const results = await ProductServices.searchProductsFromDB(searchTerm);
-
       res.status(200).json({
-          success: true,
-          message: "Products fetched successfully!",
-          data: results,
+        success: true,
+        message: "Products fetched successfully!",
+        data: results,
       });
+    } else {
+      // Fetch all products if no searchTerm is provided
+      const allProducts = await ProductServices.getAllProductsFromDB();
+      res.status(200).json({
+        success: true,
+        message: "All products fetched successfully!",
+        data: allProducts,
+      });
+    }
   } catch (err) {
-      console.error('Error searching for products:', err);
-      res.status(500).json({
-          success: false,
-          message: 'Internal server error',
-          error: err,
-      });
+    console.error("Error fetching or searching for products:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err,
+    });
   }
 };
+
 export const ProductControllers = {
   createProduct,
-  getAllProducts,
   getSingleProduct,
   updateSingleProduct,
   deleteSingleProduct,
-  searchProducts
+  getAllProducts,
 };
